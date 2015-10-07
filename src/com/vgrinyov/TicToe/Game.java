@@ -1,11 +1,9 @@
 package com.vgrinyov.TicToe;
 
-import android.widget.Toast;
-
 /**
  * Created by Grinyov Vitaliy on 06.10.15.
  *
- * Главный класс игры который создает поле игры и запол
+ * Главный класс игры
  */
 public class Game {
     /**
@@ -34,13 +32,13 @@ public class Game {
     private int squareCount;
 
     /**
-     * "Судьи" =). После каждого хода они будут проверять,
+     * Листенеры. После каждого хода они будут проверять,
      * нет ли победителя
      */
     private WinnerCheckerInterface[] winnerCheckers;
 
     /**
-     * Конструктор
+     * Конструктор игры
      *
      */
     public Game() {
@@ -53,16 +51,17 @@ public class Game {
                 squareCount++;
             }
         }
-        players = new Player[2];
-        started = false;
-        activePlayer = null;
-        filled = 0;
 
+        // Создаем листенеры
         winnerCheckers = new WinnerCheckerInterface[4];
         winnerCheckers[0] = new WinnerCheckerHorizontal(this);
         winnerCheckers[1] = new WinnerCheckerVertical(this);
         winnerCheckers[2] = new WinnerCheckerDiagonalLeft(this);
         winnerCheckers[3] = new WinnerCheckerDiagonalRight(this);
+        players = new Player[2];
+        started = false;
+        activePlayer = null;
+        filled = 0;
     }
 
     public void start() {
@@ -78,6 +77,16 @@ public class Game {
 
     public Square[][] getField() {
         return field;
+    }
+
+    public Player checkWinner() {
+        for (WinnerCheckerInterface winChecker : winnerCheckers) {
+            Player winner = winChecker.checkWinner();
+            if (winner != null) {
+                return winner;
+            }
+        }
+        return null;
     }
 
     private void setCurrentActivePlayer(Player player) {
@@ -96,30 +105,6 @@ public class Game {
 
     private void switchPlayers() {
         activePlayer = (activePlayer == players[0]) ? players[1] : players[0];
-    }
-
-    public Player checkWinner() {
-        for (WinnerCheckerInterface winChecker : winnerCheckers) {
-            Player winner = winChecker.checkWinner();
-            if (winner != null) {
-                return winner;
-            }
-        }
-        return null;
-    }
-
-    private void gameOver(Player player) {
-        CharSequence text = "Player \"" + player.getName() + "\" won!";
-        Toast.makeText(this, text, Toast.LENGTH_SHORT).show();
-        game.reset();
-        refresh();
-    }
-
-    private void gameOver() {
-        CharSequence text = "Draw";
-        Toast.makeText(this, text, Toast.LENGTH_SHORT).show();
-        game.reset();
-        refresh();
     }
 
     public Player getCurrentActivePlayer() {
@@ -143,5 +128,4 @@ public class Game {
         }
         filled = 0;
     }
-
 }
